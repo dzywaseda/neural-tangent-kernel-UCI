@@ -3,6 +3,9 @@ import numpy as np
 
 # return an array K of size (d_max, d_max, N, N), K[i][j] is kernel value of depth i + 1 with first j layers fixed 
 def kernel_value_batch(X, d_max): 
+    sets = []
+    set1 = []
+    set2 = []
     K = np.zeros((d_max, d_max, X.shape[0], X.shape[0]))
     for fix_dep in range(d_max):
         S = np.matmul(X, X.T)
@@ -15,7 +18,11 @@ def kernel_value_batch(X, d_max):
             P = np.clip(np.sqrt(np.outer(L, L)), a_min = 1e-9, a_max = None)
             Sn = np.clip(S / P, a_min = -1, a_max = 1)
             S = (Sn * (math.pi - np.arccos(Sn)) + np.sqrt(1.0 - Sn * Sn)) * P / 2.0 / math.pi
+            set1.append(S)
             H = H * (math.pi - np.arccos(Sn)) / 2.0 / math.pi
+            set2.append((math.pi - np.arccos(Sn)) / 2.0 / math.pi)
+        sets.append(set1)
+        sets.append(set2)
     return K
 
 # return an array K of size (N, N), depth d_max, first fix_dep layers fixed
